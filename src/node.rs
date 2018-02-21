@@ -43,20 +43,19 @@ impl NamedDataType {
 
 /// Trait describing something that can act like a node
 /// Can be either pure or impure
-pub trait GenericNodeType {
+pub trait NodeType {
     fn data_inputs(&self) -> Vec<NamedDataType>;
     fn data_outputs(&self) -> Vec<NamedDataType>;
+
+    fn exec_inputs(&self) -> Vec<String> { Vec::new() }
+    fn exec_outputs(&self) -> Vec<String> { Vec::new() }
+
+    fn is_pure(&self) -> bool { true }
 
     fn name(&self) -> String;
 }
 
-/// A node with exec inputs and exec outputs
-pub trait ImpureNodeType: GenericNodeType {
-    fn exec_inputs(&self) -> &[&str];
-    fn exec_outputs(&self) -> &[&str];
-}
-
 /// A node that can be executed
-pub trait ExecutableNodeType: GenericNodeType {
+pub trait ExecutableNodeType: NodeType {
     fn execute(&self, data: &[Box<RuntimeDataType>]) -> Vec<Box<RuntimeDataType>>;
 }

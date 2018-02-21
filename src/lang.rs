@@ -1,6 +1,6 @@
 // Data types
 
-use node::GenericNodeType;
+use node::NodeType;
 use node::DataType;
 use node::NamedDataType;
 
@@ -32,7 +32,7 @@ struct BinOpNodeType {
     op: BinOp,
 }
 
-impl GenericNodeType for BinOpNodeType {
+impl NodeType for BinOpNodeType {
     fn data_inputs(&self) -> Vec<NamedDataType> {
         return vec!(
             NamedDataType::new(self.data_type.clone(), "a"),

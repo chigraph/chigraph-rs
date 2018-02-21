@@ -1,10 +1,10 @@
-use serde_json::{Value, Error};
+use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize)]
 struct JSONModule {
     dependencies: Vec<String>,
     graphs: Vec<JSONGraph>,
-    types: Map<String, Vec<Map<String, String>>>,
+    types: HashMap<String, Vec<HashMap<String, String>>>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -13,12 +13,12 @@ struct JSONGraph {
     type_: String,
     name: String,
     description: String,
-    local_variables: Map<String, DataType>,
-    data_inputs: Vec<NamedDataType>,
-    data_outputs: Vec<NamedDataType>,
+    local_variables: HashMap<String, String>,
+    data_inputs: Vec<HashMap<String, String>>,
+    data_outputs: Vec<HashMap<String, String>>,
     exec_inputs: Vec<String>,
     exec_outputs: Vec<String>,
-    nodes: Map<String, JSONNode>,
+    nodes: HashMap<String, JSONNode>,
     connections: Vec<JSONConnection>,
 }
 
@@ -37,4 +37,3 @@ struct JSONConnection {
     input: (String, f32),
     output: (String, f32),
 }
-
