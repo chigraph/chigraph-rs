@@ -51,7 +51,7 @@ impl NodeType for BinOpNodeType {
 }
 
 pub struct LangModule {
-    node_types: Vec<Box<GenericNodeType>>,
+    node_types: Vec<Box<NodeType>>,
     data_types: Vec<DataType>,
 }
 
@@ -60,7 +60,7 @@ impl LangModule {
         let ops = vec!(BinOp::Add, BinOp::Subtract, BinOp::Multiply, BinOp::Divide);
 
         let mut ret = LangModule {
-            node_types: Vec::<Box<GenericNodeType>>::new(),
+            node_types: Vec::<Box<NodeType>>::new(),
             data_types: vec!(
                 DataType::Int32,
                 DataType::Float,
@@ -95,8 +95,8 @@ impl Module for LangModule {
 
         return ret;
     }
-    fn node_types(&self) -> Vec<&GenericNodeType> {
-        let mut ret = Vec::<&GenericNodeType>::new();
+    fn node_types(&self) -> Vec<&NodeType> {
+        let mut ret = Vec::<&NodeType>::new();
 
         for nt in &self.node_types {
             ret.push(nt.borrow());
