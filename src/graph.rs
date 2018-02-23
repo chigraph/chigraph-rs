@@ -140,11 +140,7 @@ impl Module for GraphModule {
         Vec::new()
     }
     fn node_types(&self) -> Vec<&NodeType> {
-        let mut ret: Vec<&NodeType> = Vec::new();
-
-        for f in &self.functions {
-            ret.push(&f)
-        }
+        self.functions.iter().map(|f| f).collect()
     }
 
 }
