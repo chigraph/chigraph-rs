@@ -7,18 +7,17 @@ use module::Module;
 
 use node::{NodeType, NamedDataType, DataType};
 
-struct NodeInstance {
+pub struct NodeInstance {
     id: Uuid,
 
-    input_data_connections: Vec<(usize, String)>,
-    output_exec_connections: Vec<(usize, String)>,
+    pub input_data_connections: Vec<(usize, String)>,
+    pub output_exec_connections: Vec<(usize, String)>,
 
     node_type: Box<NodeType>,
 }
 
 impl NodeInstance {
-
-    fn new(
+    pub fn new(
         id: Uuid,
         input_data_connections: Vec<(usize, String)>,
         output_exec_connections: Vec<(usize, String)>,
@@ -32,26 +31,26 @@ impl NodeInstance {
         }
     }
 
-    fn id(&self) -> &Uuid{
+    pub fn id(&self) -> &Uuid {
         &self.id
     }
 
-    fn data_conn(&self, id: usize) -> Option<&(usize, String)> {
+    pub fn data_conn(&self, id: usize) -> Option<&(usize, String)> {
         self.input_data_connections.get(id)
     }
 
-    fn exec_conn(&self, id: usize) -> Option<&(usize, String)> {
+    pub fn exec_conn(&self, id: usize) -> Option<&(usize, String)> {
         self.output_exec_connections.get(id)
     }
 }
 
-struct GraphFunction {
+pub struct GraphFunction {
     name: String,
     nodes: HashMap<Uuid, NodeInstance>,
 }
 
 impl GraphFunction {
-    fn new(name: String, nodes: HashMap<Uuid, NodeInstance>) -> Option<GraphFunction> {
+    pub fn new(name: String, nodes: HashMap<Uuid, NodeInstance>) -> Option<GraphFunction> {
         let ret = GraphFunction {
             name,
             nodes,
@@ -59,21 +58,23 @@ impl GraphFunction {
 
         // make sure there is exactly one node entry
         if ret.nodes_with_type("lang:entry").len() != 1 {
-             return None;
+            return None;
         }
 
-        // make sure all exit nodes have the same number of
-        let mut exit_node: Option<&NodeType> = None; // node to compare to
-        for n in ret.nodes_with_type("lang:exit") {
-            if let Some(en) = exit_node {
-                if &n.node_type.data_inputs()[..] != &en.data_inputs()[..] ||
-                    &n.node_type.data_outputs()[..] != &en.data_outputs()[..] ||
-                    n.node_type.exec_inputs().len() != en.exec_inputs().len() ||
-                    n.node_type.exec_outputs().len() != en.exec_outputs().len() {
-                    return None;
+        // make sure all exit nodes have the same node_type
+        {
+            let mut exit_node: Option<&NodeType> = None; // node to compare to
+            for n in ret.nodes_with_type("lang:exit") {
+                if let Some(en) = exit_node {
+                    if &n.node_type.data_inputs()[..] != &en.data_inputs()[..] ||
+                        &n.node_type.data_outputs()[..] != &en.data_outputs()[..] ||
+                        n.node_type.exec_inputs().len() != en.exec_inputs().len() ||
+                        n.node_type.exec_outputs().len() != en.exec_outputs().len() {
+                        return None;
+                    }
+                } else {
+                    exit_node = Some(n.node_type.borrow());
                 }
-            } else {
-                exit_node = Some(n.node_type.borrow());
             }
         }
 
@@ -89,7 +90,7 @@ impl GraphFunction {
             .map(|(_, n)| n).collect()
     }
 
-    fn entry_node_type(&self) -> &NodeType  {
+    fn entry_node_type(&self) -> &NodeType {
         self.nodes_with_type("lang:entry")[0].node_type.borrow()
     }
 
@@ -126,21 +127,29 @@ impl NodeType for GraphFunction {
     }
 }
 
-struct GraphModule {
+pub struct GraphModule {
     name: String,
     functions: Vec<GraphFunction>,
 }
 
+impl GraphModule {
+    pub fn new(name: &str, functions: Vec<GraphFunction>) {
+        GraphModule {
+            name,
+            functions,
+        }
+    }
+}
+
 impl Module for GraphModule {
     fn name(&self) -> String {
-        self.name
+        self.name.clone()
     }
 
     fn data_types(&self) -> Vec<&DataType> {
         Vec::new()
     }
     fn node_types(&self) -> Vec<&NodeType> {
-        self.functions.iter().map(|f| f).collect()
+        self.functions.iter().map(|f| f as &NodeType).collect()
     }
-
 }
