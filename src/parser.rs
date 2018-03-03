@@ -45,14 +45,14 @@ struct JSONConnection {
 }
 
 fn parse(input: &str) -> Result<GraphModule, Error> {
-    let j_mod = from_str(input)?;
+    let j_mod: JSONModule = from_str(input)?;
 
     let mut funcs = Vec::<GraphFunction>::new();
 
-    for (func_name, func) in &j_mod.graphs {
+    for &func in &j_mod.graphs {
         let mut nodes = Vec::<NodeInstance>::new();
 
-        for (node_id, node) in &f.nodes {
+        for (&node_id, &node) in &func.nodes {
             nodes.push(NodeInstance::new(match Uuid::parse_str(node_id) {
                 Ok(i) => i,
                 Err(e) => return Err(Error::custom(format!("{:?}", e))),

@@ -10,6 +10,7 @@ mod node;
 mod lang;
 mod module;
 mod graph;
+mod context;
 
 #[cfg(test)]
 mod tests {
